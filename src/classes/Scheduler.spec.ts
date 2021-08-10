@@ -6,7 +6,6 @@ describe('Testing Scheduler module', () => {
     expect(task).toBeDefined()
     task.abort()
     expect(task.state).toBe('aborted')
-    expect(Object.prototype.toString.call(task)).toBe('[object ScheduledTask]')
   })
   it('should create a new task and wait for it to be resolved', async () => {
     const task = ScheduledTask.register('task_2', () => {}, Date.now() + 1000)

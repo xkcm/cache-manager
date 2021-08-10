@@ -26,3 +26,16 @@ export const nextInteger = (() => {
 export const removeWhitespace = (str: string): string => str.replace(/\n[ \t]*/g, '')
 
 export const stringifyFunction = (fn): string => removeWhitespace(""+fn)
+
+export const hashCode = (s: string) => {
+  let hash = 0
+  if (s.length == 0) {
+    return hash
+  }
+  for (var i = 0; i < s.length; i++) {
+    var char = s.charCodeAt(i)
+    hash = ((hash<<5)-hash)+char
+    hash = hash & hash
+  }
+  return hash
+}

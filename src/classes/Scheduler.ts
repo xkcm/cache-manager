@@ -12,7 +12,7 @@ interface TaskConfig {
   overwrite?: boolean;
 }
 
-const registerScheduledTasks = new Map<string, ScheduledTask>()
+const registeredST = new Map<string, ScheduledTask>()
 
 export class ScheduledTask {
   public callback: Callback
@@ -26,10 +26,10 @@ export class ScheduledTask {
   private promiseObj: Promise<[number, number, number]>
 
   static list(){
-    return registerScheduledTasks.keys()
+    return registeredST.keys()
   }
   static task(name: string){
-    return registerScheduledTasks.get(name)
+    return registeredST.get(name)
   }
   static register(taskName: string, callback: Callback, scheduledTime: number): ScheduledTask{
     return new ScheduledTask({
@@ -41,7 +41,7 @@ export class ScheduledTask {
   }
 
   constructor(config: TaskConfig){
-    if (registerScheduledTasks.has(config.taskName) && !config.overwrite) throw new Error("Task with given name already declared")
+    if (registeredST.has(config.taskName) && !config.overwrite) throw new Error("Task with given name already declared")
     if (!(/^\w+$/.test(config.taskName))) throw new Error("Invalid task name")
     this.taskName = config.taskName
     this.callback = config.callback
@@ -52,7 +52,7 @@ export class ScheduledTask {
     else this.timeout = setTimeout(() => {
       this.execute()
     }, this.scheduledTime - Date.now())
-    registerScheduledTasks.set(config.taskName, this)
+    registeredST.set(config.taskName, this)
   }
   public execute() {
     try{clearTimeout(this.timeout)}catch(e){}

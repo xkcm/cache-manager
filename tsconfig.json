@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es3",
+    "target": "es5",
     "lib": ["ES5"],
     "declaration": true,
     "outDir": "dist/",
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src/"

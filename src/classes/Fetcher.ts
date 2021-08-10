@@ -27,7 +27,7 @@ export class Fetcher {
   private constructUri<T>(base: UriConstructor<T>, params: T): string{
     if (typeof base === 'function') return base.call(base, params)
     if (typeof base === 'string') {
-      return base.replace(/%([a-zA-Z0-9]+)/g, (match, name) => {
+      return base.replace(/:([a-zA-Z0-9]+)/g, (match, name) => {
         if (name in params) return String(JSON.stringify(params[name]))
         return match
       })

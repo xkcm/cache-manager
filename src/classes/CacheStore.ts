@@ -1,4 +1,4 @@
-import { nextInteger } from "../utils";
+import { hashCode, nextInteger } from "../utils";
 import { CacheCollection, CacheCollectionConfig, CollectionID } from "./CacheCollection";
 import { FetcherConfig } from "./Fetcher";
 import { CachedRequest } from './CachedRequest'
@@ -6,7 +6,12 @@ import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 
 export type StoreID = number | string
 interface AddCollectionConfig extends Omit<CacheCollectionConfig, 'id'> {
-  fetcherConfig: FetcherConfig
+  fetcherConfig: FetcherConfig;
+}
+interface RequestAdditionalConfig {
+  requestKey?: string;
+  forceFetch?: boolean;
+  lifespan?: number;
 }
 
 export class CacheStore {
@@ -56,15 +61,21 @@ export class CacheStore {
     }
   }
 
-  public async request<T>(url: string, config: Omit<AxiosRequestConfig, 'url'>): Promise<AxiosResponse<T>>{
-    let found = this.__requests.get(url)
+  public async request<T = any>(requestConfig: AxiosRequestConfig, config?: RequestAdditionalConfig): Promise<AxiosResponse<T>>{
+    let requestKey = config?.requestKey || hashCode(JSON.stringify(requestConfig)).toString()
+
+    // if request was cached return it
+    let found = this.__requests.get(requestKey)
     if (found) return found.response
-    const response = await axios.request<T>({
-      url,
-      ...config
+    // else perform request
+    const response = await axios.request<T>(requestConfig)
+    const cached = new CachedRequest({
+      requestConfig: requestConfig,
+      response,
+      key: requestKey,
+      lifespan: config?.lifespan
     })
-    const cached = new CachedRequest(response)
-    this.__requests.set(url, cached)
+    this.__requests.set(requestKey, cached)
     return response
   }
 }

@@ -28,7 +28,7 @@ describe("testing Cache Manager", () => {
         schemes: {
           fetchOne: {
             method: "GET",
-            uri: "https://jsonplaceholder.typicode.com/posts/%key",
+            uri: "https://jsonplaceholder.typicode.com/posts/:key",
             responseTranslator: (axiosResponse) => ({
               data: axiosResponse.data,
               key: axiosResponse.data['id']
@@ -64,18 +64,20 @@ describe("testing Cache Manager", () => {
   })
   it('should perform request and cache it', async () => {
     spiedAxios.mockClear()
-    const { data } = await cacheManager1.store('cache-store-1').request<Post[]>('http://jsonplaceholder.typicode.com/posts', {
+    const { data } = await cacheManager1.store('cache-store-1').request({
+      url: 'http://jsonplaceholder.typicode.com/posts',
       method: 'GET'
     })
-    expect(data.length).toBe(100)
+    expect(data.length).not.toBeNull()
     expect(cacheManager1.store('cache-store-1').size().requests).toBe(1)
     expect(spiedAxios).toBeCalledTimes(1)
 
-    await cacheManager1.store('cache-store-1').request<Post[]>('http://jsonplaceholder.typicode.com/posts', {
+    spiedAxios.mockClear()
+
+    await cacheManager1.store('cache-store-1').request({
+      url: 'http://jsonplaceholder.typicode.com/posts',
       method: 'GET'
     })
-
-    spiedAxios.mockClear()
 
     expect(cacheManager1.store('cache-store-1').size().requests).toBe(1)
     expect(spiedAxios).toBeCalledTimes(0)

@@ -21,6 +21,6 @@ describe("Testing utils for CacheManager", () => {
   it('should stringify simple function', () => {
     const fn = () => console.log('test')
     const string = utils.stringifyFunction(fn)
-    expect(string).toBe("() => console.log('test')")
+    expect(string).toContain("console.log('test')")
   })
 })
