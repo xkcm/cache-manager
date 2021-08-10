@@ -6,4 +6,15 @@
  * @version 1.0.0
  *
  */
-declare let alpha: string;
+import { CacheStore, StoreID } from "./classes/CacheStore";
+export declare class CacheManager {
+    private __stores;
+    constructor();
+    registerStore(id?: StoreID): CacheStore;
+    store(id: StoreID): CacheStore;
+    dropStore(id: StoreID): boolean;
+    stores(): {
+        id: StoreID;
+        CacheStore: CacheStore;
+    }[];
+}

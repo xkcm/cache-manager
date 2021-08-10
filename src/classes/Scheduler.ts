@@ -75,7 +75,4 @@ export class ScheduledTask {
     }
     return this.promiseObj
   }
-  get [Symbol.toStringTag](){
-    return 'ScheduledTask'
-  }
 }
