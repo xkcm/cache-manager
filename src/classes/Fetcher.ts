@@ -40,14 +40,12 @@ export class Fetcher {
   public async fetchOne<T = CacheItemData>(key: CacheItemKey): Promise<{ data: T, key: CacheItemKey }>{
     if (!this.fetchingSchemes.fetchOne) throw new Error('Fetching scheme \'fetchOne\' not specified')
     const response = await this.fetch<T>('fetchOne', { key })
-    const data = this.fetchingSchemes.fetchOne.responseTranslator<T>(response)
-    return data
+    return this.fetchingSchemes.fetchOne.responseTranslator<T>(response)
   }
   public async fetchSome<T = CacheItemData>(keys: CacheItemKey[]): Promise<{ data: T, key: CacheItemKey }[]>{
     if (!this.fetchingSchemes.fetchSome) throw new Error('Fetching scheme \'fetchSome\' not specified')
     const response = await this.fetch<T>('fetchSome', { keys })
-    const data = this.fetchingSchemes.fetchSome.responseTranslator<T>(response)
-    return data
+    return this.fetchingSchemes.fetchSome.responseTranslator<T>(response)
   }
   public setScheme<T extends FetchingScheme>(fetchingScheme: T, config: FetcherConfig['schemes'][T]){
     this.fetchingSchemes[fetchingScheme] = config
@@ -55,11 +53,10 @@ export class Fetcher {
   private async fetch<T>(fetchMethod: FetchingScheme, params: Record<string | number, any>){
     const uri = this.constructUri(this.fetchingSchemes[fetchMethod].uri, params)
     const payload = this.fetchingSchemes[fetchMethod].payload ? this.constructPayload(this.fetchingSchemes[fetchMethod].payload, params) : {}
-    const response = await axios.request<T>({
+    return axios.request<T>({
       method: this.fetchingSchemes[fetchMethod].method,
       data: payload,
       url: uri
     })
-    return response
   }
 }

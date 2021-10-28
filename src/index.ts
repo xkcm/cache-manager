@@ -30,11 +30,10 @@ export class CacheManager {
   public dropStore(id: StoreID){
     let store = this.__stores.get(id)
     store.dropCollections()
-    store = null
     return this.__stores.delete(id)
   }
   public stores(){
-    return [...this.__stores.entries()].map(([, store]) => ({
+    return [...this.__stores.values()].map(store => ({
       id: store.id, CacheStore: store
     }))
   }

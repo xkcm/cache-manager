@@ -6,10 +6,10 @@ import { UpdatableItem, UpdatableItemConfig } from "./UpdatableItem"
 export type CacheItemKey = unknown
 export type CacheItemData = unknown
 
-interface CacheItemConfig {
+interface CacheItemConfig<T> {
   parentCollection: CacheCollection;
   key: CacheItemKey,
-  data: CacheItemData
+  data: T
 }
 interface CacheItemFlags {
   updateOnce: boolean;
@@ -17,12 +17,12 @@ interface CacheItemFlags {
 }
 
 export class CacheItem<T = CacheItemData> extends UpdatableItem {
-  public data: CacheItemData
+  public data: T
   public key: CacheItemKey
 
   private parentCollection: CacheCollection
 
-  constructor(config: CacheItemConfig, updateConfig: UpdatableItemConfig){
+  constructor(config: CacheItemConfig<T>, updateConfig: UpdatableItemConfig = {}){
     super(updateConfig)
 
     this.data = config.data

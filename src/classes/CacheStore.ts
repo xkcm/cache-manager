@@ -42,7 +42,7 @@ export class CacheStore {
     this.collection(name).drop()
   }
   public collections(){
-    return [...this.__collections.entries()].map(([, collection]) => ({
+    return [...this.__collections.values()].map(collection => ({
       id: collection.id,
       size: collection.cache().length
     }))
@@ -50,7 +50,6 @@ export class CacheStore {
   public dropCollections(){
     for (let [id, collection] of this.__collections.entries()){
       collection.drop()
-      collection = null
       this.__collections.delete(id)
     }
   }
@@ -74,6 +73,8 @@ export class CacheStore {
       response,
       key: requestKey,
       lifespan: config?.lifespan
+    }, {
+      lifespan: Infinity
     })
     this.__requests.set(requestKey, cached)
     return response

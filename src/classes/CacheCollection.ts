@@ -13,13 +13,15 @@ export class CacheCollection {
   public fetcher: Fetcher
 
   private __items: Map<CacheItemKey, CacheItem>
-  private settings: Map<string, CollectionSettingValue>
+  private __settings: Map<string, CollectionSettingValue> 
+  
   constructor(config: CacheCollectionConfig){
     this.id = config.id
     this.__items = new Map()
-    this.settings = new Map([
+    this.__settings = new Map<string, CollectionSettingValue>([
       ["ignoreKeyMismatch", false],
-      ["fetchSomeByOne", false]
+      ["fetchSomeByOne", false],
+      ["itemsLifespan", Infinity]
     ])
   }
   public async getOne<T = CacheItemData>(key: CacheItemKey): Promise<CacheItem<T>>{
@@ -27,8 +29,12 @@ export class CacheCollection {
     if (!cached) {
       let { data, key: extractedKey } = await this.fetcher.fetchOne<T>(key)
       if (key !== extractedKey && !this.setting('ignoreKeyMismatch')) throw new Error("Fetched key mismatch")
-      const cacheItem = new CacheItem<T>(extractedKey, data, {
+      const cacheItem = new CacheItem<T>({
+        key: extractedKey,
+        data,
         parentCollection: this
+      }, {
+        lifespan: this.setting("itemsLifespan") as number
       })
       this.__items.set(extractedKey, cacheItem)
       return cacheItem
@@ -46,15 +52,23 @@ export class CacheCollection {
       if (this.setting('fetchSomeByOne')) {
         for (let key of toFetch) {
           const fetchedOne = await this.getOne<T>(key)
-          fetched.push(new CacheItem(key, fetchedOne, {
+          fetched.push(new CacheItem({
+            key,
+            data: fetchedOne,
             parentCollection: this
+          }, {
+            lifespan: this.setting("itemsLifespan") as number
           }))
         }
       }
       else {
         fetched = await this.fetcher.fetchSome<T>(toFetch)
-        fetched = fetched.map(item => new CacheItem<T>(item.key, item.data, {
+        fetched = fetched.map(item => new CacheItem<T>({
+          key: item.key,
+          data: item.data,
           parentCollection: this
+        }, {
+          lifespan: this.setting("itemsLifespan") as number
         }))
       }
     }
@@ -82,14 +96,14 @@ export class CacheCollection {
   }
   public setting(name: string): CollectionSettingValue
   public setting(name: string, val: CollectionSettingValue): boolean
-  public setting(name: string, val?: any): any{
-    if (typeof val !== undefined) {
-      if (this.settings.has(name)) {
-        this.settings.set(name, val)
+  public setting(name: string, val?: any): any {
+    if (typeof val !== 'undefined') {
+      if (this.__settings.has(name)) {
+        this.__settings.set(name, val)
         return true
       }
       return false
     }
-    else return this.settings.get(name)
+    else return this.__settings.get(name)
   }
 }

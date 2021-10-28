@@ -2,18 +2,18 @@ import { nextInteger } from "../utils";
 import { ScheduledTask } from "./Scheduler";
 
 export interface UpdatableItemConfig {
-  lifespan: number;
+  lifespan?: number;
   keepOld?: boolean;
   updateOnce?: boolean;
   updateTimes?: number;
 }
-interface UpdatableItemSettings {
+interface UpdatableItemFlags {
   keepOld: boolean;
   updateOnce: boolean;
   updateTimes: number;
 }
 
-export class UpdatableItem {
+export abstract class UpdatableItem {
   public lifespan: number
   public updatedAt: number
   public createdAt: number
@@ -21,7 +21,7 @@ export class UpdatableItem {
   public updates: number = 0
   public snapshots: Map<number, unknown>
 
-  protected flags: UpdatableItemSettings = {
+  protected flags: UpdatableItemFlags = {
     keepOld: false,
     updateOnce: false,
     updateTimes: Infinity
@@ -54,10 +54,10 @@ export class UpdatableItem {
     this.snapshots.set(this.updatedAt, this)
   }
   public get nextUpdateTime() {
-    return this.updateTask.scheduledTime
+    return this.updateTask ? this.updateTask.scheduledTime : this.createdAt + this.lifespan
   }
-  // meant to be overridden in a parent class
-  protected async update(){}
+  // to be overridden in a parent class
+  protected abstract update(): Promise<unknown>;
   private postUpdate(){
     if (!this.flags.updateOnce && this.flags.updateTimes > this.updates) this.scheduleUpdate()
     if (this.flags.keepOld) this.saveSnapshot()
