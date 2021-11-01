@@ -4,7 +4,7 @@ TypeScript library for managing cache storage with __key-based__ items and sched
 ### Structure
 The main node in the *cache-manager* hierarchy is `CacheManager` instance. `CacheManager` manages `CacheStores` which manage single `CacheCollections`. `CacheStores` are meant to be used in different parts of the application and `CacheCollection` helps partition the data into smaller chunks which makes it more organised.
 
-![cache-manager hierarchy](https://i.imgur.com/MjFQAgh.png)
+![cache-manager hierarchy](https://i.imgur.com/xed1pjv.png)
 
 ---
 ## Usage
