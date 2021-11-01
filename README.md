@@ -56,7 +56,12 @@ Manager and container for `CacheStores`.
 ### [`CacheManager#constructor()`](src/index.ts#L15)
 
 **Params**
+
 Constructor takes no parameters.
+
+**Return value**
+
+`CacheManager` instance
 
 **Example**
 ```ts
@@ -102,6 +107,7 @@ Drops `CacheStore` with given `id` and deletes all its `CacheCollections` and `C
 * `id` **{String}**: (required) Store ID
 
 **Return value**
+
 `boolean` (`true` if dropped successfully and `false` otherwise)
 
 **Example**
@@ -114,9 +120,11 @@ cacheManager.dropStore("collection-1")
 Returns list of registered `CacheStores`
 
 **Params**
+
 `CacheManager#stores()` takes no parameters
 
 **Return value**
+
 `[ { id: String, store: CacheStore } ]`
 
 **Example**
@@ -135,6 +143,7 @@ Registers new `CacheCollection`
 * `id` **{String}**: (optional) Collection ID
 
 **Return value**
+
 `CacheCollection` instance
 
 **Example**
@@ -162,6 +171,7 @@ Returns registered `CacheCollection` by `id`
 * `id` **{String}**: (required) Collection ID
 
 **Return value**
+
 `CacheCollection` instance
 
 **Example**
@@ -173,9 +183,11 @@ cacheManager.store("store-1").collection("some-custom-id")
 Returns list of registered `CacheCollections`
 
 **Params**
+
 `CacheStore#collections()` takes no parameters
 
 **Return value**
+
 `[ { id: String, size: number } ]`
 
 **Example**
@@ -190,6 +202,7 @@ Drops `CacheCollection` instance by `id`
 * `id` **{String}**: (required) Collection ID
 
 **Return value**
+
 `boolean` (`true` if dropped successfully, `false` otherwise)
 
 **Example**
@@ -201,9 +214,11 @@ cacheManager.store("store-1").dropCollection("some-custom-id")
 Drops all registered `CacheCollections`
 
 **Params**
+
 `CacheStore#dropCollections()` takes no parameters
 
 **Return value**
+
 `boolean` (`true` if dropped successfully, `false` otherwise)
 
 **Example**
@@ -215,9 +230,11 @@ cacheManager.store("store-1").dropCollections()
 Returns object containing sizes of `CacheCollections` and `CachedRequests`
 
 **Params**
+
 `CacheStore#size()` takes no parameters
 
 **Return value**
+
 `{ collections: number, requests: number }`
 
 **Example**
@@ -233,6 +250,7 @@ Performs request and caches its response in a `CachedRequest` instance
 * `additionalConfig` [**{RequestAdditionalConfig}**](#requestadditionalconfig): (optional) Additional `CachedRequest` configuration
 
 **Return value**
+
 `Promise<AxiosResponse<T>>` 
 
 **Example**
@@ -255,6 +273,7 @@ Returns key-based `CacheItem` from memory or fetches it using `Fetcher`
 * `key` **{CacheItemKey}**: (required) Key of the item
 
 **Return value**
+
 `Promise<CacheItem<T>>`
 
 **Example**
@@ -269,6 +288,7 @@ Returns key-based `CacheItems` from memory or fetches those which are not in the
 * `keys` **{CacheItemKey[]}**: (required) Keys of the items
 
 **Return value**
+
 `Promise<CacheItem<T>[]>`
 
 **Example**
@@ -284,7 +304,17 @@ Creates new `Fetcher` instance using given `fetcherConfig`
 * `fetcherConfig` [**{FetcherConfig}**](#fetcherconfig): (required) `Fetcher` configuration
 
 **Return value**
+
 `Fetcher` instance
+
+**Example**
+```ts
+cacheManager.store("store-1").collection("collection-1").createFetcher({
+  schemes: {
+    fetchOne: ...
+  }
+})
+```
 
 ### [`CacheCollection#drop(key?)`](src/classes/CacheCollection.ts#L81)
 Drops `CacheItem` with given `key` or all `CacheItems` if no `key` is passed
@@ -293,6 +323,7 @@ Drops `CacheItem` with given `key` or all `CacheItems` if no `key` is passed
 * `key` **{CacheItemKey}**: (optional) Key of the item to drop
 
 **Return value**
+
 `boolean` (`true` if dropped successfully, `false` otherwise)
 
 **Example**
@@ -304,9 +335,11 @@ cacheManager.store("store-1").collection("collection-1").drop(21)
 Returns the number of `CachedItems` within the `CacheCollection`
 
 **Params**
+
 `CacheCollection#size()` takes no parameters
 
 **Return value**
+
 `number` of `CacheItems`
 
 **Example**
@@ -318,9 +351,11 @@ cacheManager.store("store-1").collection("collection-1").size()
 Returns list of all `CachedItems` mapped to an `Object`
 
 **Params**
+
 `CacheCollection#cache()` takes no parameters
 
 **Return value**
+
 `[ { key: CacheItemKey, data: CacheItemData } ]`
 
 **Example**
@@ -332,10 +367,12 @@ const collectionOneCache = cacheManager.store("store-1").collection("collection-
 Returns the `CacheCollection` *setting* labeled by `name` or sets it the new `value` if the second argument is passed
 
 **Params**
+
 * `name` **{String}**: (required) Label of the setting
 * `value` [**{CollectionSettingValue}**](#collectionsettingvalue): (optional) Value of the setting
 
 **Return value**
+
 `CollectionSettingValue` or `boolean` if second argument is passed
 
 **Example**
@@ -387,11 +424,11 @@ interface RequestSchema<T, Y> {
 
 For `fetchOne` *fetching scheme*, available placeholders are:
 
-- `:key` - it gets replaced by the `key` value passed to the [`CacheCollection#getOne(key)`](#)
+- `:key` - it gets replaced by the `key` value passed to the [`CacheCollection#getOne<T>(key)`](#cachecollectiongetonetkey)
 
 For `fetchSome` *fetching scheme*, available placeholders are:
 
-- `:keys` - it gets replaced by the *stringified* `keys` value passed to the [`CacheCollection#getSome(keys)`](#)
+- `:keys` - it gets replaced by the *stringified* `keys` value passed to the [`CacheCollection#getSome<T>(keys)`](#cachecollectiongetsometkeys)
 
 ```ts
 type UriConstructor<T> = string | ((args: T) => string);
