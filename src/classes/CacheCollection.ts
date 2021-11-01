@@ -74,17 +74,19 @@ export class CacheCollection {
     }
     return [...cached, ...fetched]
   }
-  public createFetcher(config: FetcherConfig){
-    this.fetcher = new Fetcher(config)
+  public createFetcher(fetcherConfig: FetcherConfig){
+    this.fetcher = new Fetcher(fetcherConfig)
     return this.fetcher
   }
   public drop(itemKey?: CacheItemKey){
+    let res = true
     for(let key of (itemKey ? [itemKey] : this.__items.keys())) {
       let item = this.__items.get(key)
       item.destroy()
       item = null 
-      this.__items.delete(key)
+      res &&= this.__items.delete(key)
     }
+    return res
   }
   public size(){
     return this.__items.size

@@ -38,8 +38,9 @@ export class CacheStore {
     this.__collections.set(id, newCollection)
     return newCollection
   }
-  public removeCollection(name: CollectionID){
-    this.collection(name).drop()
+  public dropCollection(id: CollectionID){
+    this.collection(id).drop()
+    return this.__collections.delete(id)
   }
   public collections(){
     return [...this.__collections.values()].map(collection => ({
@@ -48,10 +49,12 @@ export class CacheStore {
     }))
   }
   public dropCollections(){
+    let res = true
     for (let [id, collection] of this.__collections.entries()){
       collection.drop()
-      this.__collections.delete(id)
+      res &&= this.__collections.delete(id)
     }
+    return res
   }
   public size(){
     return {
@@ -60,8 +63,8 @@ export class CacheStore {
     }
   }
 
-  public async request<T = any>(requestConfig: AxiosRequestConfig, config?: RequestAdditionalConfig): Promise<AxiosResponse<T>>{
-    let requestKey = config?.requestKey || hashCode(JSON.stringify(requestConfig)).toString()
+  public async request<T = any>(requestConfig: AxiosRequestConfig, additionalConfig?: RequestAdditionalConfig): Promise<AxiosResponse<T>>{
+    let requestKey = additionalConfig?.requestKey || hashCode(JSON.stringify(requestConfig)).toString()
 
     // if request was cached return it
     let found = this.__requests.get(requestKey)
@@ -72,7 +75,7 @@ export class CacheStore {
       requestConfig: requestConfig,
       response,
       key: requestKey,
-      lifespan: config?.lifespan
+      lifespan: additionalConfig?.lifespan
     }, {
       lifespan: Infinity
     })

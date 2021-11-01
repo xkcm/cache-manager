@@ -34,7 +34,7 @@ export class CacheManager {
   }
   public stores(){
     return [...this.__stores.values()].map(store => ({
-      id: store.id, CacheStore: store
+      id: store.id, store
     }))
   }
 }
