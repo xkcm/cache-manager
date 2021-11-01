@@ -48,6 +48,8 @@ By having `CacheManager` declared as `cacheManager` you can access the `CacheSto
 const item3 = await cacheManager.store(/* store ID */ "store-1").collection(/* collection ID */ "collection-1").getOne<Post>(3)
 ```
 ---
+## Creator's note
+This library will not be further developed, it is impractial and difficult to set up and customize. Therefore I will be developing a new TypeScript library with a completely different approach. Check this other repo [here](http://github.com/xkcm/ts-cache).
 ## API
 
 ## [`CacheManager`](src/index.ts#L13)
